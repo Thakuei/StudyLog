@@ -1,1 +1,1 @@
-# -StudyLog
+# StudyLog
