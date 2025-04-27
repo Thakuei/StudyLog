@@ -25,6 +25,7 @@ services:
       DATABASE_USERNAME: user
       DATABASE_PASSWORD: password
       RAILS_ENV: development
+    working_dir: /app
     depends_on:
       - db
 
