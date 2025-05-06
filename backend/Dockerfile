@@ -12,7 +12,7 @@ ARG RUBY_VERSION=3.2.8
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
-WORKDIR /rails
+WORKDIR /app
 
 # Install base packages
 RUN apt-get update -qq && \
@@ -66,5 +66,5 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start server via Thruster by default, this can be overwritten at runtime
 EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
-
+# CMD ["./bin/thrust", "./bin/rails", "server"]
+CMD ["bin/rails", "server", "-b", "0.0.0.0", "-p", "80"]
