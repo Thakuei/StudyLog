@@ -15,14 +15,4 @@ test:
   database: app_test
 
 production:
-  primary:
-    <<: *default
-    database: app_production
-
-  cache:
-    <<: *default
-    database: app_production # まずは primary と同じにしておく（分けたいなら後で別DB）
-
-  queue:
-    <<: *default
-    database: app_production # 同上
+  url: <%= ENV['DATABASE_URL'] %>
