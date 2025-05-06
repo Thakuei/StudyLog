@@ -43,6 +43,8 @@ Rails.application.configure do
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
+  config.active_support.cache_versioning = false
+
   # Replace the default in-process memory cache store with a durable alternative.
   config.cache_store = :memory_store
 
