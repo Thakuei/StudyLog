@@ -32,3 +32,4 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: bundle exec rails db:migrate
+
