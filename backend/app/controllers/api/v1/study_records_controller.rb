@@ -16,7 +16,7 @@ module Api::V1
         text: "<@#{params[:user_id]}>さんが勉強を終了しました!(処理開始)" 
       }, status: :ok
 
-      StudyRecordCompletionJob.perform_later(params[:user_id] params[:response_url])
+      StudyRecordCompletionJob.perform_later(params[:user_id], params[:response_url])
     end
   end
 end
