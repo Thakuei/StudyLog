@@ -1,21 +1,21 @@
 class StudyRecordCreationJob < ApplicationJob
   queue_as :default
 
-  def perform(slack_user_id, user_name, response_url)
+  def perform(slack_user_id, user_name)
     user = User.find_or_create_by(slack_id: slack_user_id) do |u|
       u.name = user_name
     end
 
     StudyRecord.create!(user_id: user.id, start_time: Time.current)
 
+    notify_slack("<@#{slack_user_id}>さんの勉強記録を開始しました！")
   rescue => e
-    post_to_slack(response_url, "エラーが発生しました: #{e.message}")
+    notify_slack("エラーが発生しました: #{e.message}")
   end
 
   private
 
-  def post_to_slack(response_url, message)
-    notifier = Slack::Notifier.new(response_url)
-    notifier.ping(message)
+  def notify_slack(message)
+    Slack::Notifier.new(ENV["SLACK_WEBHOOK_URL"]).ping(message)
   end
 end

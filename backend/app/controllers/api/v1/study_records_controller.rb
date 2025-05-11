@@ -7,7 +7,7 @@ module Api::V1
         text: "<@#{params[:user_id]}>さんが勉強を開始しました！" 
       }
 
-      StudyRecordCreationJob.perform_later(params[:user_id], params[:user_name], params[:response_url])
+      StudyRecordCreationJob.perform_later(params[:user_id], params[:user_name])
     end
 
     def end
@@ -16,7 +16,7 @@ module Api::V1
         text: "<@#{params[:user_id]}>さんが勉強を終了しました!" 
       }, status: :ok
 
-      StudyRecordCompletionJob.perform_later(params[:user_id], params[:response_url])
+      StudyRecordCompletionJob.perform_later(params[:user_id])
     end
   end
 end
