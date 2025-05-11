@@ -8,7 +8,7 @@ class StudyRecordCreationJob < ApplicationJob
 
     StudyRecord.create!(user_id: user.id, start_time: Time.current)
 
-    notify_slack("<@#{slack_user_id}>さんの勉強記録を開始しました！")
+    notify_slack("<@#{slack_user_id}>さんの勉強を開始しました！")
   rescue => e
     notify_slack("エラーが発生しました: #{e.message}")
   end
