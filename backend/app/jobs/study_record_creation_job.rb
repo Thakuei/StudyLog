@@ -8,7 +8,6 @@ class StudyRecordCreationJob < ApplicationJob
 
     StudyRecord.create!(user_id: user.id, start_time: Time.current)
 
-    post_to_slack(response_url, "<@#{slack_user_id}>さんの勉強記録を開始しました！")
   rescue => e
     post_to_slack(response_url, "エラーが発生しました: #{e.message}")
   end
@@ -16,7 +15,7 @@ class StudyRecordCreationJob < ApplicationJob
   private
 
   def post_to_slack(response_url, message)
-    uri = URI.parse(response_url)
-    Net::HTTP.post(uri, { text: message }.to_json, "Content-Type" => "application/json")
+    notifier = Slack::Notifier.new(response_url)
+    notifier.ping(message)
   end
 end
