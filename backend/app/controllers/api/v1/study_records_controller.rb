@@ -4,7 +4,7 @@ module Api::V1
     def start
       render json: { 
         response_type: "in_channel",
-        text: "<@#{params[:user_id]}>さんが勉強を開始しました！(処理開始)" 
+        text: "<@#{params[:user_id]}>さんが勉強を開始しました！" 
       }
 
       StudyRecordCreationJob.perform_later(params[:user_id], params[:user_name], params[:response_url])
@@ -13,7 +13,7 @@ module Api::V1
     def end
       render json: { 
         response_type: "in_channel",
-        text: "<@#{params[:user_id]}>さんが勉強を終了しました!(処理開始)" 
+        text: "<@#{params[:user_id]}>さんが勉強を終了しました!" 
       }, status: :ok
 
       StudyRecordCompletionJob.perform_later(params[:user_id], params[:response_url])
