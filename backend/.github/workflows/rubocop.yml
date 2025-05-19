@@ -1,0 +1,36 @@
+name: RuboCop
+
+on:
+  pull_request:
+    paths:
+      - 'backend/**.rb'
+      - 'backend/Gemfile'
+      - 'backend/.rubocop.yml'
+  push:
+    branches:
+      - main
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend  # 必要に応じて調整
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2.8' # .ruby-version と一致させる
+
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install --jobs 4 --retry 3
+
+      - name: Run RuboCop
+        run: bundle exec rubocop

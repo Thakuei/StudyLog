@@ -1,74 +1,41 @@
 # syntax=docker/dockerfile:1
-# check=error=true
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t backend .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name backend backend
-
-# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
-
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.2.8
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+FROM ruby:$RUBY_VERSION-slim AS base
 
-# Rails app lives here
 WORKDIR /app
 
-# Install base packages
+# 共通パッケージのインストール
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl default-mysql-client libjemalloc2 libvips && \
+    apt-get install --no-install-recommends -y \
+    curl default-mysql-client libjemalloc2 libvips \
+    build-essential default-libmysqlclient-dev git libyaml-dev pkg-config && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Set production environment
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+# Ruby bundler設定（デフォルトは開発モードにしておく）
+ENV BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3 \
+    BUNDLE_FROZEN="false" \
+    BUNDLE_DEPLOYMENT="false" \
+    RAILS_ENV="development"
 
-# Throw-away build stage to reduce size of final image
-FROM base AS build
-
-# Install packages needed to build gems
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git libyaml-dev pkg-config && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
-
-# Install application gems
+# Gemfile / Gemfile.lock をコピーして bundle install
 COPY Gemfile Gemfile.lock ./
+RUN bundle config set frozen false && bundle install
 
-ENV BUNDLE_DEPLOYMENT="0"
-ENV BUNDLE_FROZEN="false"
-
-RUN bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
-
-# Copy application code
+# アプリケーションコードをコピー
 COPY . .
 
-# Precompile bootsnap code for faster boot times
-# RUN bundle exec bootsnap precompile app/ lib/
-
-
-
-
-# Final stage for app image
-FROM base
-
-# Copy built artifacts: gems, application
-COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
-COPY --from=build /app /app
-
-# Run and own only the runtime files as a non-root user for security
+# 非rootユーザー作成
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp
-USER 1000:1000
 
-# Entrypoint prepares the database.
+USER rails
+
+# Entrypointとポート設定
 ENTRYPOINT ["/app/bin/docker-entrypoint"]
+EXPOSE 3000
+CMD ["bin/rails", "server", "-b", "0.0.0.0"]
 
-# Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
-# CMD ["./bin/thrust", "./bin/rails", "server"]
-CMD ["bin/rails", "server", "-b", "0.0.0.0", "-p", "80"]
