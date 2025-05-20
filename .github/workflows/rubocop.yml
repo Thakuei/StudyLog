@@ -16,7 +16,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend  # 必要に応じて調整
+        working-directory: backend  # ✅ これは run: に効くのでOK
 
     steps:
       - name: Checkout code
@@ -25,7 +25,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2.8' # .ruby-version と一致させる
+          ruby-version: '3.2.8'  # ✅ ここで明示指定すれば .ruby-version は読みに行かない
 
       - name: Install dependencies
         run: |
