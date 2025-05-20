@@ -25,7 +25,8 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2.8'  # ✅ ここで明示指定すれば .ruby-version は読みに行かない
+          ruby-version: '3.2.8'
+          bundler-cache: true
 
       - name: Install dependencies
         run: |
