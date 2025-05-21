@@ -59,10 +59,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: backend
-
     services:
       mysql:
         image: mysql
@@ -84,14 +80,17 @@ jobs:
         with:
           ruby-version: '3.2.8'
           bundler-cache: true
+        # ← uses: に working-directory は書かない
 
       - name: Install dependencies
         run: |
           gem install bundler
           bundle install --jobs 4 --retry 3
+        working-directory: backend
 
       - name: Run tests
         env:
           RAILS_ENV: test
           DATABASE_URL: mysql2://127.0.0.1:3306
         run: bin/rails db:test:prepare test
+        working-directory: backend
