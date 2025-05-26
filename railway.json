@@ -1,0 +1,15 @@
+{
+  "services": {
+    "studylog": {
+      "source": "backend",
+      "startCommand": "bundle exec rails s -b 0.0.0.0",
+      "jobs": [
+        {
+          "name": "force-finish-job",
+          "schedule": "0 12 * * *",
+          "command": "bundle exec rails runner 'StudyRecord.force_finish_all'"
+        }
+      ]
+    }
+  }
+}

@@ -7,6 +7,7 @@ WORKDIR /app
 # 共通パッケージ
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
+    cron \
     curl default-mysql-client libjemalloc2 libvips \
     build-essential default-libmysqlclient-dev git libyaml-dev pkg-config && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
@@ -40,5 +41,11 @@ USER rails
 # ポートを80で統一（Railway対応）
 EXPOSE 80
 ENTRYPOINT ["/app/bin/docker-entrypoint"]
-CMD ["bin/rails", "server", "-b", "0.0.0.0", "-p", "80"]
+# CMD ["bin/rails", "server", "-b", "0.0.0.0", "-p", "80"]
 
+CMD ["/bin/bash", "-c", \
+  "if [ \"$RAILS_ENV\" = 'production' ]; then \
+     exec bin/rails server -b 0.0.0.0 -p 80; \
+   else \
+     service cron start && bin/rails server -b 0.0.0.0 -p 80; \
+   fi"]
