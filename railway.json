@@ -2,7 +2,10 @@
   "services": {
     "studylog": {
       "source": "backend",
-      "startCommand": "bundle exec rails s -b 0.0.0.0",
+      "startCommand": "bundle exec rails s -b 0.0.0.0"
+    },
+    "force-finish-job": {
+      "source": "backend",
       "jobs": [
         {
           "name": "force-finish-job",
