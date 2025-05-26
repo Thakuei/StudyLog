@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  scan_ruby:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2.8'
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install --jobs 4 --retry 3
+
+      - name: Scan for Rails vulnerabilities
+        run: bundle exec brakeman --no-pager
+
+  lint:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2.8'
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install --jobs 4 --retry 3
+
+      - name: Lint code for consistent style
+        run: bundle exec rubocop -f github
+
+  # test:
+  #   runs-on: ubuntu-latest
+
+  #   services:
+  #     mysql:
+  #       image: mysql
+  #       env:
+  #         MYSQL_ALLOW_EMPTY_PASSWORD: true
+  #       ports:
+  #         - 3306:3306
+  #       options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+  #   steps:
+  #     - name: Install packages
+  #       run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git libyaml-dev pkg-config
+
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Set up Ruby
+  #       uses: ruby/setup-ruby@v1
+  #       with:
+  #         ruby-version: '3.2.8'
+  #         bundler-cache: true
+  #       # ← uses: に working-directory は書かない
+
+  #     - name: Install dependencies
+  #       run: |
+  #         gem install bundler
+  #         bundle install --jobs 4 --retry 3
+  #       working-directory: backend
+
+  #     - name: Run tests
+  #       env:
+  #         RAILS_ENV: test
+  #         DATABASE_URL: mysql2://127.0.0.1:3306
+  #       run: bin/rails db:test:prepare test
+  #       working-directory: backend

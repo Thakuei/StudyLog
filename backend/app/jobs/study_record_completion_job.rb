@@ -20,7 +20,7 @@ class StudyRecordCompletionJob < ApplicationJob
     end
 
     study_record.update!(end_time: Time.current)
-    study_time = ((study_record.end_time - study_record.start_time) / 60).round(2)
+    study_time = (study_record.end_time - study_record.start_time) / 60
 
     notify_slack("<@#{slack_user_id}>さんが勉強を終了しました！所要時間 #{study_time}分。")
   rescue => e
