@@ -10,12 +10,12 @@ development:
   password: password
   host: db
 
-test:
-  <<: *default
-  database: app_test
-  username: user
-  password: password
-  host: db
+# test:
+#   <<: *default
+#   database: app_test
+#   username: user
+#   password: password
+#   host: db
 
 production:
   url: <%= ENV['DATABASE_URL'] %>
