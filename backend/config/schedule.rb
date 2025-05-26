@@ -20,8 +20,8 @@
 # Learn more: http://github.com/javan/whenever
 
 set :output, "log/cron.log"
-env :PATH, ENV['PATH']
+env :PATH, ENV["PATH"]
 
-every 1.day, at: '9:00 pm' do
+every 1.day, at: "9:00 pm" do
   runner "StudyRecord.force_finish_all"
 end
