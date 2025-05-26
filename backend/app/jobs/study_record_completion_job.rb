@@ -27,7 +27,7 @@ class StudyRecordCompletionJob < ApplicationJob
 
     formatted_time = hours > 0 ? "#{hours}時間#{minutes}分" : "#{minutes}分"
 
-    notify_slack("<@#{slack_user_id}>さんが勉強を終了しました！所要時間 #{formatted_time}分。")
+    notify_slack("<@#{slack_user_id}>さんが勉強を終了しました！所要時間 #{formatted_time}")
   rescue => e
     notify_slack("エラーが発生しました: #{e.message}")
   end
