@@ -20,14 +20,11 @@ class StudyRecordCompletionJob < ApplicationJob
     end
 
     study_record.update!(end_time: Time.current)
-    study_time_in_minutes = ((study_record.end_time - study_record.start_time) / 60).to_i
+    study_time_in_minutes = (study_record.end_time - study_record.start_time) / 60.0
+    study_time_in_hours = (study_time_in_minutes / 60).round(1)
 
-    hours = study_time_in_minutes / 60
-    minutes = study_time_in_minutes % 60
+    notify_slack("<@#{slack_user_id}>さんが勉強を終了しました！所要時間 #{study_time_in_hours}時間")
 
-    formatted_time = hours > 0 ? "#{hours}時間#{minutes}分" : "#{minutes}分"
-
-    notify_slack("<@#{slack_user_id}>さんが勉強を終了しました！所要時間 #{formatted_time}")
   rescue => e
     notify_slack("エラーが発生しました: #{e.message}")
   end
